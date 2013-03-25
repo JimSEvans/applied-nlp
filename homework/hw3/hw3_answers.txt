@@ -1,9 +1,9 @@
 Applied-NLP, Homework 3 Answers
 
-Name: 
-EID:
+Name: James Evans
+EID: je9953
 
-Link to applied-nlp fork: 
+Link to applied-nlp fork: https://github.com/JimSEvans/applied-nlp
 
 --------------------------------------------------------------------------------
 
@@ -11,21 +11,122 @@ Problem 1
 
 Part (b): Provide the requested output.
 
+$ anlp app Cluster -k 3 -d e -c clusters_equal_variance.dat
+Unable to find a $JAVA_HOME at "/usr", continuing with system-provided Java...
+--------------------------------------------------------------------------------
+Confusion matrix.
+Columns give predicted counts. Rows give gold counts.
+--------------------------------------------------------------------------------
+50	0	0	|	50	[1]
+0	0	30	|	30	[2]
+0	20	0	|	20	[3]
+-------------------------
+50	20	30
+[0]	[1]	[2]
+
+
+
 
 Problem 2
 
 * Provide th command line call and the output.
+
+$ anlp app Cluster -k 3 -d e -t z -c clusters_bigger_x_variance.dat
+Unable to find a $JAVA_HOME at "/usr", continuing with system-provided Java...
+--------------------------------------------------------------------------------
+Confusion matrix.
+Columns give predicted counts. Rows give gold counts.
+--------------------------------------------------------------------------------
+0	46	4	|	50	[1]
+3	2	25	|	30	[2]
+17	0	3	|	20	[3]
+-------------------------
+20	48	32
+[0]	[1]	[2]
+
+
+
+
+
 
 
 Problem 3
 
 Part (a): Provide the clusters and any comments.
 
+anlp app Cluster -k 2 -d e -f schools --report -c achieve.dat
+[3.5962962962962957,3.7629629629629626]
+[5.486956521739131,5.482608695652174]
+--------------------------------------------------------------------------------
+Confusion matrix.
+Columns give predicted counts. Rows give gold counts.
+--------------------------------------------------------------------------------
+23	2	|	25	[4]
+4	21	|	25	[6]
+-----------------
+27	23
+[0]	[1]
+
+
+The schools in this sample are (on average) below average. The 6th grade centroid is (5.5, 5.5), so both numbers are below the 6th grade average of 6.0; the 4th grade centroid is (3.6, 3.8), which is also below the average of 4.0 for both scores.
+
+
 
 Part (b): Discuss outliers.
 
 
+Edgewood_4th and Hooker_4th did very well on the tests, scoring well above average. It is not surprising that they were assigned to the 6th grade cluster---their scores look more like 6th grade scores. 
+
+Similarly, the 6th grade classes at Brennan, Conte, and Day got scores that seem like slightly standard 4th-grader scores.
+
+
+
 Part (c): Your interpretation for output when k=4.
+
+
+One of the clusters is for the very low-scoring 4th grade classes (most of them) (column [1]) (worse than all 6th grade classes), and one is for the very highest-scoring 6th graders (column [2]; only a few members, and no 4th graders). 
+
+Then there is is a cluster for the handful of decent-scoring 4th graders and the very low-scoring 6th graders (slightly less than half of 6th grade classes). And finally, are the two very high-scoring 4th graders (which were incorrectly assigned to the 6th grade cluster when k=2) combined with a handful of decent-scoring 6th-graders.
+
+
+The output follows:
+
+$ anlp app Cluster -k 4 -d e -f schools -r -c achieve.dat
+Unable to find a $JAVA_HOME at "/usr", continuing with system-provided Java...
+[5.45,5.47]
+[3.2777777777777777,3.4388888888888887]
+[7.1,6.3]
+[4.370588235294117,4.68235294117647]
+--------------------------------------------------------------------------------
+Confusion matrix.
+Columns give predicted counts. Rows give gold counts.
+--------------------------------------------------------------------------------
+2	18	0	5	|	25	[4]
+8	0	5	12	|	25	[6]
+---------------------------------
+10	18	5	17
+[0]	[1]	[2]	[3]
+
+[Label: 4] <=> [Cluster: 1]
+Ids: BALDWIN_4th	BARNARD_4th	BRENNAN_4th	CLINTON_4th	CONTE_4th	DAY_4th	DWIGHT_4th	EDWARDS_4th	IVY_4th	KIMBERLY_4th	LINCOLN_BASSETT_4th	PRINCE_4th	SCRANTON_4th	SHERMAN_4th	TRUMAN_4th	WEST_HILLS_4th	WINCHESTER_4th	WOODWARD_4th
+
+[Label: 4] <=> [Cluster: 0]
+Ids: EDGEWOOD_4th	HOOKER_4th
+
+[Label: 6] <=> [Cluster: 0]
+Ids: BARNARD_6th	CLINTON_6th	EDWARDS_6th	HALE_6th	LOVELL_6th	ROSS_6th	SHERMAN_6th	WEST_HILLS_6th
+
+[Label: 6] <=> [Cluster: 2]
+Ids: BEECHER_6th	DAVIS_6th	EDGEWOOD_6th	HOOKER_6th	WOODWARD_6th
+
+[Label: 6] <=> [Cluster: 3]
+Ids: BALDWIN_6th	BRENNAN_6th	CONTE_6th	DAY_6th	DWIGHT_6th	IVY_6th	KIMBERLY_6th	LINCOLN_BASSETT_6th	PRINCE_6th	SCRANTON_6th	TRUMAN_6th	WINCHESTER_6th
+
+[Label: 4] <=> [Cluster: 3]
+Ids: BEECHER_4th	DAVIS_4th	HALE_4th	LOVELL_4th	ROSS_4th
+
+
+
 
 
 Problem 4
@@ -33,14 +134,31 @@ Problem 4
 * Describe what you found.
 
 
+
+I started using euclidean distance and no scaling. As you increase k, up to 9 (inclusive), dispersion goes down by over 100 each time, but it drops after that, and by increasing k from 11 to 12 you gain less than 30.
+
+Scaling makes an enormous difference in dispersion. When using z-scores, the dispersion was tiny compared to when the data is unscaled. My impression was that the diminishing effect of increasing k is more obvious earlier on.
+
+Using cosine distance instead, even without transforming the data, results in tiny dispersion values. It is hard to get a sense of what the payoff is for adding 1 to k with dispersions so small.
+
+I found using manhattan distance to not make too much of a difference from euclidean.
+
+
 Problem 5
 
 * Describe result of using z-score transform on the simple features.
 
+With z-scores, the Hamilton documents are more concentrated, the Madison documents are  equally spread out, as are the Jay docs. The Hamilton_and_Madison docs are a little more concentrated with Hamilton than with unscaled clustering.
 
 
 Problem 6
 
+
+I was interested in seeing how well I could do without using content words. I started out by making IndexedSeqs of function words of different types, e.g. pronouns, prepositions, and looking at the combined counts of these within each article's text. I realized that doing this would potentially obscure the effect of each individual word that in bigger categories, and I also realized that I probably didn't have to worry about too many dimensions since I was only looking at function words, and so I switched to making every function word it's own dimension. This made it so that I didn't have to worry so much about whether or not my categories were ideal (e.g. it eliminated the worry that I might be combining categories in the "wrong" way; for example, perhaps "it" shouldn't be in the same category as gendered pronouns.)
+
+I added in other dimensions, including average word length, proportion of capitalized words, and frequency of commas and periods. As with the function words, some of these dimensions didn't help. At the point when I added the comma frequency, it did not help, whereas the period did. Both the relative frequency of capitalized words and average word length helped.
+
+The majority of my time involved trying new dimensions, and seeing their effect. I was surprised at how adding certain words (e.g. "that") actually hurt the accuracy. I also initially tried z-scores and pca, because sometimes one worked better than the other, but this was tedious and I ended up just going with pca. Unscaled always seemed worse than either.
 
 
 Problem 7

@@ -20,13 +20,43 @@ object Cluster {
   def main(args: Array[String]) {
     // Parse and get the command-line options
     val opts = ClusterOpts(args)
-    
+
     // This tells the k-means algorithm how much debugging information to show you
     // while you run the algorithm. 
     val logLevel = if (opts.verbose()) Level.DEBUG else Level.INFO
     Logger.getRootLogger.setLevel(logLevel)
     
     // Your code starts here. You'll use and extend it during every problem.
+    // val filename = "~/applied-nlp/data/cluster/generated/" + args.takeRight(1)
+
+
+    val dataTriples: IndexedSeq[(String, String, Point)] = {
+        if (opts.features() == "schools") (SchoolsCreator("/Users/jamesevans/applied-nlp/data/cluster/schools/" + opts.filename())).toIndexedSeq
+        else if (opts.features() == "countries") (CountriesCreator("/Users/jamesevans/applied-nlp/data/cluster/countries/" + opts.filename())).toIndexedSeq 
+        else if (opts.features() == "fed-simple") (new FederalistCreator(simple = true)("/Users/jamesevans/applied-nlp/data/cluster/federalist/" + opts.filename())).toIndexedSeq 
+        else if (opts.features() == "fed-full") (new FederalistCreator()("/Users/jamesevans/applied-nlp/data/cluster/federalist/" + opts.filename())).toIndexedSeq 
+        else (DirectCreator("/Users/jamesevans/applied-nlp/data/cluster/generated/" + opts.filename())).toIndexedSeq
+        }
+
+    val dataPreTrans = for (triple <- dataTriples) yield triple._3
+
+    val data = PointTransformer(opts.transform(), dataPreTrans)(dataPreTrans)
+
+    val kmeansRes = new Kmeans(data, DistanceFunction(opts.distance()), fixedSeedForRandom = true).run(opts.k())
+
+    val predicted = new Kmeans(data, DistanceFunction(opts.distance()), fixedSeedForRandom = true).computeClusterMemberships(kmeansRes._2)
+
+
+    val gold = dataTriples.map(triple => triple._2)
+
+    val ids = dataTriples.map(triple => triple._1)
+
+println(kmeansRes._1)
+kmeansRes._2.foreach(println)
+
+println(ClusterConfusionMatrix(gold, opts.k(), predicted._2))
+
+if (opts.report() == true) println(ClusterReport(ids, gold, predicted._2))
 
 
     // Display the dispersion. Uncomment the println once you have the
