@@ -112,9 +112,43 @@ class ExtendedFeatureExtractor(bitvectors: Map[String, BitVector])
     val basicFeatures = BasicFeatureExtractor(verb, noun, prep, prepObj)
 
     // Extract more features
+    val moreFeatures = {
+      val vClass = bitvectors(verb).keepTopBits(20).toString
+      val nClass = bitvectors(noun).keepTopBits(15).toString
+      val vStem = stemmer(verb)
+      val nStem = stemmer(noun)
+      val vStem_nStem = vStem + "_" + nStem
+      val vClass_nClass = vClass + "_" + nClass
+      val vClass_prep = vClass + "_" + prep
+      val nClass_prep = nClass + "_" + prep
+      val nLength = noun.length.toString
+      val vLength = verb.length.toString
+
+      // val verb_prep = verb + "_" + prep
+      // val verb_noun = verb + "_" + noun
+
+      List(
+        AttrVal("vClass", vClass)
+        ,AttrVal("nClass", nClass)
+        ,AttrVal("vStem", vStem)
+        ,AttrVal("nStem", nStem)
+        ,AttrVal("vStem_nStem", vStem_nStem)
+        ,AttrVal("vClass_nClass", vClass_nClass)
+        ,AttrVal("vClass_prep", vClass_prep)
+        ,AttrVal("nLength", nLength)
+        
+        // ,AttrVal("nClass_prep", nClass_prep)
+        // ,AttrVal("vLength", vLength)
+
+        )
+
+      //AttrVal("verb+noun", verb_and_noun),
+
+
+    }
 
     // Return the features. You should of course add your features to basic ones.
-    basicFeatures
+    basicFeatures ++ moreFeatures
   }
 
 }

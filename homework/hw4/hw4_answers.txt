@@ -1,0 +1,29 @@
+Problem 1
+
+Accuracy: 78.57142857142857
+
+Problem 2
+
+Good value for C:
+$ nak classify --train out/ppa.basic.training --eval out/ppa.basic.devset -c 0.47
+Accuracy: 82.19856400099034
+
+
+Problem 3
+
+How Ratnaparkhi et al (1994) did their clustering:
+
+They take the C most common words in the corpus and assign each word its own class. Then they take the (C + 1)th word and assign it its own class (so that there are C + 1 classes). Then a pair of classes are merged into one such that the loss of average mutual information (MI) is minimized, bringing the total number of classes back to C. This is repeated for the (C + 2)th word, and so on, until the entire vocabulary has been assigned to a class, and there are C. Then a similar process is used on the classes, whereby the the pair of classes is merged such that the loss of average MI is minimized, until only one class, remains. 
+
+A binary tree is created from this entire process based on the order in which words are assigned classes and classes are merged. Each leaf of this large tree contains a vocabuary item, which is encoded in binary (a left branching is 0, a right branching is 1). The maximum number of bits necessary for encoding a word is the length of the bit string for all words, which is acheived by adding 0s to the end of shorter bit strings.
+
+Problem 4
+
+Since high-confidence classifications are usually right, we could add such classifications to training data. For example, if a classifier is being used often (e.g. classifying incoming email messages), we could store high-confidence predictions in the gold data set, and periodically retrain the classfier.
+
+
+Problem 5
+
+Accuracy on dev set: 78.7828947368421
+
+Accuracy on test set: 
